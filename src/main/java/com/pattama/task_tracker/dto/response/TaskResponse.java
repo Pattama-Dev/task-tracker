@@ -17,11 +17,11 @@ public class TaskResponse {
     private TaskStatus status;
     private TaskPriority priority;
 
-    private TaskList taskList;
-//    private String taskListTitle;
+//    private TaskList taskList;
+    private Long taskListId;
+    private String taskListTitle;
 
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-
 
 }
