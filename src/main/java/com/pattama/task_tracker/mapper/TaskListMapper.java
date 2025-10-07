@@ -6,19 +6,22 @@ import com.pattama.task_tracker.dto.response.TaskListResponse;
 import com.pattama.task_tracker.entity.Task;
 import com.pattama.task_tracker.entity.TaskList;
 import com.pattama.task_tracker.entity.TaskStatus;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {TaskMapper.class})
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        uses = {TaskMapper.class})
 public interface TaskListMapper {
-
     TaskList toEntity(TaskListRequest taskListRequest);
 
     TaskListResponse toTaskListResponse(TaskList taskList);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
+    void updateEntityFromRequest(TaskListRequest request, @MappingTarget TaskList entity);
 
     @AfterMapping
     default void calculateProgress(
@@ -41,7 +44,7 @@ public interface TaskListMapper {
                 .filter(t -> t.getStatus() == TaskStatus.COMPLETED)
                 .count();
 
-        double progress = (double) (completeTasks / totalTasks) * 100.0;
+        double progress = ((double) completeTasks / totalTasks) * 100.0;
 
         taskListResponse.setTotalTasks(totalTasks);
         taskListResponse.setCompleteTasks(completeTasks);
